@@ -5,7 +5,7 @@ package:
   create:
     set:
       version: v0.0.0-rke2r0
-      # renovate: datasource=github-releases depName=rancher/rke2 versioning=regex:^v(?<major>1)\.(?<minor>31)\.(?<patch>\d+)\+rke2r(?<build>\d+)$
+      # renovate: datasource=git-tags depName=rancher/rke2 versioning=regex:^v(?<major>1)\.(?<minor>31)\.(?<patch>\d+)\+rke2r(?<build>\d+)$
       rke2_version: v1.31.10+rke2r1
       rke2_sha_amd64: 130de7d79f22936045c002f66853948b9f8c1ed0397b820be63f32d844eae1ca
       rke2_sha_arm64: 828c26b6e3fc584de96677544197fd19472fa59f9d889876e2ca09c82fcd5ba6
