@@ -8,6 +8,10 @@ metadata:
   annotations:
     org.opencontainers.image.source: "https://github.com/colonel-byte/zarf-pkg-rke2"
     org.opencontainers.image.description: Zarf package for deploying rke2
+variables:
+  - name: RKE2_ARGS
+    description: Arguments to pass to rke2
+    default: ""
 components:
   - name: binary
     required: true
@@ -88,8 +92,7 @@ components:
   - name: server
     required: false
     files:
-      - source: target/rke2.linux-amd64.tar.gz
-        extractPath: lib/systemd/system/rke2-server.service
+      - source: files/rke2-server.service
         target: /etc/systemd/system/rke2-server.service
         symlinks:
           - /etc/systemd/system/multi-user.target.wants/rke2-server.service
@@ -97,14 +100,10 @@ components:
       onDeploy:
         after:
           - cmd: systemctl daemon-reload
-    only:
-      cluster:
-        architecture: amd64
   - name: agent
     required: false
     files:
-      - source: target/rke2.linux-amd64.tar.gz
-        extractPath: lib/systemd/system/rke2-agent.service
+      - source: files/rke2-agent.service
         target: /etc/systemd/system/rke2-agent.service
         symlinks:
           - /etc/systemd/system/multi-user.target.wants/rke2-agent.service
@@ -112,39 +111,6 @@ components:
       onDeploy:
         after:
           - cmd: systemctl daemon-reload
-    only:
-      cluster:
-        architecture: amd64
-  - name: server
-    required: false
-    files:
-      - source: target/rke2.linux-arm64.tar.gz
-        extractPath: lib/systemd/system/rke2-server.service
-        target: /etc/systemd/system/rke2-server.service
-        symlinks:
-          - /etc/systemd/system/multi-user.target.wants/rke2-server.service
-    actions:
-      onDeploy:
-        after:
-          - cmd: systemctl daemon-reload
-    only:
-      cluster:
-        architecture: arm64
-  - name: agent
-    required: false
-    files:
-      - source: target/rke2.linux-arm64.tar.gz
-        extractPath: lib/systemd/system/rke2-agent.service
-        target: /etc/systemd/system/rke2-agent.service
-        symlinks:
-          - /etc/systemd/system/multi-user.target.wants/rke2-agent.service
-    actions:
-      onDeploy:
-        after:
-          - cmd: systemctl daemon-reload
-    only:
-      cluster:
-        architecture: arm64
   - name: images
     required: true
     only:
@@ -160,7 +126,6 @@ components:
             cmd: |-
               rm -rf ./target
               mkdir -p ./target
-              echo ""
               for img in `cat ./files/images-core.linux-amd64.txt | sort`; do
                 export TAR="$(echo $img | sed -E 's/\//_/g; s/:.+$//g').tar"
                 echo "pulling $img"
@@ -181,7 +146,6 @@ components:
             cmd: |-
               rm -rf ./target
               mkdir -p ./target
-              echo ""
               for img in `cat ./files/images-core.linux-arm64.txt | sort`; do
                 export TAR="$(echo $img | sed -E 's/\//_/g; s/:.+$//g').tar"
                 echo "pulling $img"
