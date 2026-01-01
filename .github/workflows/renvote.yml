@@ -8,6 +8,7 @@ on:
 permissions:
   contents: write
   id-token: write # needed for keyless signing
+  pull-requests: write
 jobs:
   resources:
     name: renovate-config
