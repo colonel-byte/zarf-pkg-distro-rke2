@@ -129,7 +129,7 @@ components:
               for img in `cat ./files/images-core.linux-amd64.txt | sort`; do
                 export TAR="$(echo $img | sed -E 's/\//_/g; s/:.+$//g').tar"
                 echo "pulling $img"
-                ./zarf tools registry pull  --platform "linux/amd64" $img ./target/$TAR
+                ./zarf tools registry pull  --platform "linux/amd64" $img ./target/$TAR 2> /dev/null
               done
   - name: images
     required: true
@@ -149,5 +149,121 @@ components:
               for img in `cat ./files/images-core.linux-arm64.txt | sort`; do
                 export TAR="$(echo $img | sed -E 's/\//_/g; s/:.+$//g').tar"
                 echo "pulling $img"
-                ./zarf tools registry pull  --platform "linux/arm64" $img ./target/$TAR
+                ./zarf tools registry pull  --platform "linux/arm64" $img ./target/$TAR 2> /dev/null
+              done
+  - name: cni-cilium-images
+    required: true
+    only:
+      flavor: cni-cilium
+      cluster:
+        architecture: amd64
+    files:
+      - target: /var/lib/rancher/rke2/images
+        source: target
+    actions:
+      onDeploy:
+        before:
+          - description: remove existing cached cilium images
+            cmd: |-
+              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_mirrored-cilium-*
+              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_hardened-cni-*
+      onCreate:
+        before:
+          - description: pull images
+            cmd: |-
+              rm -rf   target
+              mkdir -p target
+
+              for img in `cat ./files/images-cilium.linux-amd64.txt | grep -iv "#" | sort`; do
+                export TAR="$(echo $img | sed -E 's/\//_/g; s/:.+$//g').tar"
+                echo "pulling $img"
+                ./zarf tools registry pull  --platform "linux/amd64" $img ./target/$TAR 2> /dev/null
+              done
+  - name: cni-cilium-images
+    required: true
+    only:
+      flavor: cni-cilium
+      cluster:
+        architecture: arm64
+    files:
+      - target: /var/lib/rancher/rke2/images
+        source: target
+    actions:
+      onDeploy:
+        before:
+          - description: remove existing cached cilium images
+            cmd: |-
+              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_mirrored-cilium-*
+              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_hardened-cni-*
+      onCreate:
+        before:
+          - description: pull images
+            cmd: |-
+              rm -rf   target
+              mkdir -p target
+
+              for img in `cat ./files/images-cilium.linux-arm64.txt | grep -iv "#" | sort`; do
+                export TAR="$(echo $img | sed -E 's/\//_/g; s/:.+$//g').tar"
+                echo "pulling $img"
+                ./zarf tools registry pull  --platform "linux/arm64" $img ./target/$TAR 2> /dev/null
+              done
+  - name: cni-multus-images
+    required: true
+    only:
+      flavor: cni-multus
+      cluster:
+        architecture: amd64
+    files:
+      - target: /var/lib/rancher/rke2/images
+        source: target
+    actions:
+      onDeploy:
+        before:
+          - description: remove existing cached multus images
+            cmd: |-
+              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_hardened-multus-*
+              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_hardened-cni-*
+              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_whereabouts-*
+              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_library-*
+      onCreate:
+        before:
+          - description: pull images
+            cmd: |-
+              rm -rf   target
+              mkdir -p target
+
+              for img in `cat ./files/images-multus.linux-amd64.txt | grep -iv "#" | sort`; do
+                export TAR="$(echo $img | sed -E 's/\//_/g; s/:.+$//g').tar"
+                echo "pulling $img"
+                ./zarf tools registry pull  --platform "linux/amd64" $img ./target/$TAR 2> /dev/null
+              done
+  - name: cni-multus-images
+    required: true
+    only:
+      flavor: cni-multus
+      cluster:
+        architecture: arm64
+    files:
+      - target: /var/lib/rancher/rke2/images
+        source: target
+    actions:
+      onDeploy:
+        before:
+          - description: remove existing cached multus images
+            cmd: |-
+              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_hardened-multus-*
+              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_hardened-cni-*
+              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_whereabouts-*
+              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_library-*
+      onCreate:
+        before:
+          - description: pull images
+            cmd: |-
+              rm -rf   target
+              mkdir -p target
+
+              for img in `cat ./files/images-multus.linux-arm64.txt | grep -iv "#" | sort`; do
+                export TAR="$(echo $img | sed -E 's/\//_/g; s/:.+$//g').tar"
+                echo "pulling $img"
+                ./zarf tools registry pull  --platform "linux/arm64" $img ./target/$TAR 2> /dev/null
               done
