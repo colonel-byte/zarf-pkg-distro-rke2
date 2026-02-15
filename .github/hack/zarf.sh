@@ -24,6 +24,8 @@ for arch in "${ARCH[@]}"; do
   yq -i "$yq_sha" zarf-config.yaml
   echo "::debug::pulling air-gap image list"
   curl ${GITHUB_TOKEN:+" -u \":$GITHUB_TOKEN\""} -s -L -o files/images-core.linux-$arch.txt https://github.com/rancher/rke2/releases/download/$RKE2_VERSION/rke2-images-core.linux-$arch.txt
+  curl ${GITHUB_TOKEN:+" -u \":$GITHUB_TOKEN\""} -s -L -o files/images-multus.linux-$arch.txt https://github.com/rancher/rke2/releases/download/$RKE2_VERSION/rke2-images-multus.linux-$arch.txt
+  curl ${GITHUB_TOKEN:+" -u \":$GITHUB_TOKEN\""} -s -L -o files/images-cilium.linux-$arch.txt https://github.com/rancher/rke2/releases/download/$RKE2_VERSION/rke2-images-cilium.linux-$arch.txt
 done
 
 echo "::debug::pulling down the rke2 linux tar bundle"

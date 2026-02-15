@@ -21,6 +21,10 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
+        flavor:
+          - vanilla
+          - cni-cilium
+          - cni-multus
         arch:
           - amd64
           - arm64
