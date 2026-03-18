@@ -21,7 +21,7 @@ jobs:
         with:
           use-regex: true
           packages: "zarf/distro-rke2"
-          exclude-tags: "^v\\d+\\.\\d+\\.\\d+-rke2r\\d+$"
+          exclude-tags: "^v\\d+\\.\\d+\\.\\d+(-rke2r\\d+)?$"
           token: '${{ secrets.GITHUB_TOKEN }}'
           keep-n-tagged: 0
           keep-n-untagged: 0
