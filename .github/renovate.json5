@@ -13,6 +13,7 @@
     "main",
     "/^release\\/.*/"
   ],
+  commitMessagePrefix: "feat:",
   packageRules: [
     {
       matchDatasources: [
