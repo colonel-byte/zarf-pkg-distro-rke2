@@ -20,5 +20,6 @@ jobs:
       - name: action
         uses: colonel-byte/zarf-pkg-distro-rke2/.github/reusable/release-please@main
         with:
+          branch: main
           github_app_id: ${{ secrets.RELEASE_PLEASE_GITHUB_APP_ID }}
           github_app_key: ${{ secrets.RELEASE_PLEASE_GITHUB_APP_SECRET }}
