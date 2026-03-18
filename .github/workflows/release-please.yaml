@@ -1,0 +1,21 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - main
+      - release/v1.*
+  workflow_dispatch:
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    # Only run in the upstream repository
+    if: github.repository == 'colonel-byte/zarf-pkg-distro-rke2'
+    steps:
+      - name: action
+        uses: colonel-byte/zarf-pkg-distro-rke2/.github/reusable/release-please@main
+        with:
+          branch: release/v1.34.x
+          github_app_id: ${{ secrets.RELEASE_PLEASE_GITHUB_APP_ID }}
+          github_app_key: ${{ secrets.RELEASE_PLEASE_GITHUB_APP_SECRET }}
