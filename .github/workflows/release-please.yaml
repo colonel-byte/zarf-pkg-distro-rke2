@@ -14,7 +14,7 @@ jobs:
     if: github.repository == 'colonel-byte/zarf-pkg-distro-rke2'
     steps:
       - name: action
-        uses: colonel-byte/zarf-pkg-distro-rke2/.github/reusable/release-please@main
+        uses: colonel-byte/zarf-pkg-distro-rke2/.github/reusable/release-please@9943704a51b1c76c5514b325140975e229908bac # main
         with:
           branch: release/v1.32.x
           github_app_id: ${{ secrets.RELEASE_PLEASE_GITHUB_APP_ID }}
