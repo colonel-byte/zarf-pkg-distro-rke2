@@ -31,7 +31,7 @@ jobs:
           - arm64
     steps:
       - name: action
-        uses: colonel-byte/zarf-pkg-distro-rke2/.github/reusable/release@main
+        uses: colonel-byte/zarf-pkg-distro-rke2/.github/reusable/release@9943704a51b1c76c5514b325140975e229908bac # main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           docker_hub_token: ${{ secrets.DOCKER_HUB_TOKEN }}
