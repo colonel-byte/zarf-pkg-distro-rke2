@@ -43,6 +43,13 @@
         "*"
       ],
       automerge: true,
+    },
+    {
+      matchManagers: ["github-actions"],
+      matchPackageNames: [
+        "colonel-byte/zarf-pkg-distro-rke2"
+      ],
+      enabled: false,
     }
   ],
   separateMajorMinor: false,
