@@ -9,3 +9,12 @@ package:
       rke2_version: v1.35.2+rke2r1
       rke2_sha_amd64: bac7a96afe11a4013faaf3de33af220e7a22807cc27c5dedd900f5bbd6625378
       rke2_sha_arm64: 88909f8434fc9e0beb9d2cb2a8e81fa7405c3582547e4c5cbe61575a2bf1af5e
+      # all the various related rpms
+      rke2_rpm_sha_amd64: c885818144ab8a7719def5a9a5f3d47d3fe4e8c7343d546e8b66dd993ffcc3d6
+      rke2_rpm_sha_arm64: 36469e1cbe2f953ed26096514a58d8cf68e36d4a37c6378ce65cfcc961affb04
+      rke2_rpm_agent_sha_amd64: 964b674ef08bc66fccbff7ec960fb9b08182a94d6e4531c3988a6e48e83f525e
+      rke2_rpm_agent_sha_arm64: 9b59a7679bc16adeb2c1b739b53b92e6f67e908fe71e22dfe1e0e5fb671bdb41
+      rke2_rpm_server_sha_amd64: 3ada2fef7137eacd93a434e2d97f153b5596d4637f38970757f5d2c711513951
+      rke2_rpm_server_sha_arm64: 49ec258f2e946a16643ff2b3432f801c8036b3fa66e11ac6d163a1d68de5c7ef
+      rke2_selinux_rpm_version: "0.22"
+      rke2_selinux_rpm_sha: a079e2c3d848ca7173017427af39aa8a442581c447dca97bd905c31d33790f24

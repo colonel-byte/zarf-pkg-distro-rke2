@@ -13,257 +13,62 @@ variables:
     description: Arguments to pass to rke2
     default: ""
 components:
-  - name: binary
+  - name: install-engine
     required: true
-    files:
-      - source: target/rke2.linux-amd64.tar.gz
-        extractPath: bin/rke2
-        target: /var/lib/rancher/rke2/bin/rke2
-        shasum: "###ZARF_PKG_TMPL_RKE2_SHA_AMD64###"
-        executable: true
-      - source: target/rke2.linux-amd64.tar.gz
-        extractPath: bin/rke2-killall.sh
-        target: /var/lib/rancher/rke2/bin/rke2-killall.sh
-        executable: true
-      - source: target/rke2.linux-amd64.tar.gz
-        extractPath: bin/rke2-uninstall.sh
-        target: /var/lib/rancher/rke2/bin/rke2-uninstall.sh
-        executable: true
     only:
-      cluster:
-        architecture: amd64
-    actions:
-      onCreate:
-        before:
-          - cmd: |-
-              rm -rf   target
-              mkdir -p target
-              echo https://github.com/rancher/rke2/releases/download/###ZARF_PKG_TMPL_RKE2_VERSION###/rke2.linux-amd64.tar.gz
-              curl -L -o ./target/rke2.linux-amd64.tar.gz https://github.com/rancher/rke2/releases/download/###ZARF_PKG_TMPL_RKE2_VERSION###/rke2.linux-amd64.tar.gz
-            description: pull rke2 tar-ball
-      onDeploy:
-        defaults:
-          maxRetries: 5
-        before:
-          - cmd: if [ "$(uname -m)" != "x86_64" ]; then echo "this package architecture is amd64, but the target system has a different architecture. These architectures must be the same" && exit 1; fi
-            description: Check that the host architecture matches the package architecture
-            maxRetries: 0
-          - cmd: ./zarf internal is-valid-hostname
-            maxRetries: 0
-            description: Check if the current system has a, RFC1123 compliant hostname
-  - name: binary
-    required: true
-    files:
-      - source: target/rke2.linux-arm64.tar.gz
-        extractPath: bin/rke2
-        target: /var/lib/rancher/rke2/bin/rke2
-        shasum: "###ZARF_PKG_TMPL_RKE2_SHA_ARM64###"
-        executable: true
-      - source: target/rke2.linux-arm64.tar.gz
-        extractPath: bin/rke2-killall.sh
-        target: /var/lib/rancher/rke2/bin/rke2-killall.sh
-        executable: true
-      - source: target/rke2.linux-arm64.tar.gz
-        extractPath: bin/rke2-uninstall.sh
-        target: /var/lib/rancher/rke2/bin/rke2-uninstall.sh
-        executable: true
-    only:
-      cluster:
-        architecture: arm64
-    actions:
-      onCreate:
-        before:
-          - cmd: |-
-              rm -rf   target
-              mkdir -p target
-              echo https://github.com/rancher/rke2/releases/download/###ZARF_PKG_TMPL_RKE2_VERSION###/rke2.linux-arm64.tar.gz
-              curl -L -o ./target/rke2.linux-arm64.tar.gz https://github.com/rancher/rke2/releases/download/###ZARF_PKG_TMPL_RKE2_VERSION###/rke2.linux-arm64.tar.gz
-            description: pull rke2 tar-ball
-      onDeploy:
-        defaults:
-          maxRetries: 5
-        before:
-          - cmd: if [ "$(uname -m)" != "aarch64" ] && [ "$(uname -m)" != "arm64" ]; then echo "this package architecture is arm64, but the target system has a different architecture. These architectures must be the same" && exit 1; fi
-            description: Check that the host architecture matches the package architecture
-            maxRetries: 0
-          - cmd: ./zarf internal is-valid-hostname
-            maxRetries: 0
-            description: Check if the current system has a, RFC1123 compliant hostname
-  - name: server
+      flavor: binary
+    import:
+      path: install/binary
+
+  - name: install-server
     required: false
-    files:
-      - source: files/rke2-server.service
-        target: /etc/systemd/system/rke2-server.service
-        symlinks:
-          - /etc/systemd/system/multi-user.target.wants/rke2-server.service
-    actions:
-      onDeploy:
-        after:
-          - cmd: systemctl daemon-reload
-  - name: agent
+    only:
+      flavor: binary
+    import:
+      path: install/binary
+
+  - name: install-agent
     required: false
-    files:
-      - source: files/rke2-agent.service
-        target: /etc/systemd/system/rke2-agent.service
-        symlinks:
-          - /etc/systemd/system/multi-user.target.wants/rke2-agent.service
-    actions:
-      onDeploy:
-        after:
-          - cmd: systemctl daemon-reload
-  - name: images
-    required: true
     only:
-      cluster:
-        architecture: amd64
-    files:
-      - target: /var/lib/rancher/rke2/images
-        source: ./target
-    actions:
-      onCreate:
-        before:
-          - description: pull images
-            cmd: |-
-              rm -rf ./target
-              mkdir -p ./target
-              for img in `cat ./files/images-core.linux-amd64.txt | sort`; do
-                export TAR="$(echo $img | sed -E 's/\//_/g; s/:.+$//g').tar"
-                echo "pulling $img"
-                ./zarf tools registry pull  --platform "linux/amd64" $img ./target/$TAR 2> /dev/null
-              done
-  - name: images
-    required: true
-    only:
-      cluster:
-        architecture: arm64
-    files:
-      - target: /var/lib/rancher/rke2/images
-        source: ./target
-    actions:
-      onCreate:
-        before:
-          - description: pull images
-            cmd: |-
-              rm -rf ./target
-              mkdir -p ./target
-              for img in `cat ./files/images-core.linux-arm64.txt | sort`; do
-                export TAR="$(echo $img | sed -E 's/\//_/g; s/:.+$//g').tar"
-                echo "pulling $img"
-                ./zarf tools registry pull  --platform "linux/arm64" $img ./target/$TAR 2> /dev/null
-              done
-  - name: cni-cilium-images
-    required: true
-    only:
-      flavor: cni-cilium
-      cluster:
-        architecture: amd64
-    files:
-      - target: /var/lib/rancher/rke2/images
-        source: target
-    actions:
-      onDeploy:
-        before:
-          - description: remove existing cached cilium images
-            cmd: |-
-              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_mirrored-cilium-*
-              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_hardened-cni-*
-      onCreate:
-        before:
-          - description: pull images
-            cmd: |-
-              rm -rf   target
-              mkdir -p target
+      flavor: binary
+    import:
+      path: install/binary
 
-              for img in `cat ./files/images-cilium.linux-amd64.txt | grep -iv "#" | sort`; do
-                export TAR="$(echo $img | sed -E 's/\//_/g; s/:.+$//g').tar"
-                echo "pulling $img"
-                ./zarf tools registry pull  --platform "linux/amd64" $img ./target/$TAR 2> /dev/null
-              done
-  - name: cni-cilium-images
+  - name: install-engine
     required: true
     only:
-      flavor: cni-cilium
-      cluster:
-        architecture: arm64
-    files:
-      - target: /var/lib/rancher/rke2/images
-        source: target
-    actions:
-      onDeploy:
-        before:
-          - description: remove existing cached cilium images
-            cmd: |-
-              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_mirrored-cilium-*
-              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_hardened-cni-*
-      onCreate:
-        before:
-          - description: pull images
-            cmd: |-
-              rm -rf   target
-              mkdir -p target
+      flavor: rpm
+    import:
+      path: install/rpm
 
-              for img in `cat ./files/images-cilium.linux-arm64.txt | grep -iv "#" | sort`; do
-                export TAR="$(echo $img | sed -E 's/\//_/g; s/:.+$//g').tar"
-                echo "pulling $img"
-                ./zarf tools registry pull  --platform "linux/arm64" $img ./target/$TAR 2> /dev/null
-              done
-  - name: cni-multus-images
-    required: true
+  - name: install-server
+    required: false
     only:
-      flavor: cni-multus
-      cluster:
-        architecture: amd64
-    files:
-      - target: /var/lib/rancher/rke2/images
-        source: target
-    actions:
-      onDeploy:
-        before:
-          - description: remove existing cached multus images
-            cmd: |-
-              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_hardened-multus-*
-              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_hardened-cni-*
-              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_whereabouts-*
-              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_library-*
-      onCreate:
-        before:
-          - description: pull images
-            cmd: |-
-              rm -rf   target
-              mkdir -p target
+      flavor: rpm
+    import:
+      path: install/rpm
 
-              for img in `cat ./files/images-multus.linux-amd64.txt | grep -iv "#" | sort`; do
-                export TAR="$(echo $img | sed -E 's/\//_/g; s/:.+$//g').tar"
-                echo "pulling $img"
-                ./zarf tools registry pull  --platform "linux/amd64" $img ./target/$TAR 2> /dev/null
-              done
-  - name: cni-multus-images
-    required: true
+  - name: install-agent
+    required: false
     only:
-      flavor: cni-multus
-      cluster:
-        architecture: arm64
-    files:
-      - target: /var/lib/rancher/rke2/images
-        source: target
-    actions:
-      onDeploy:
-        before:
-          - description: remove existing cached multus images
-            cmd: |-
-              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_hardened-multus-*
-              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_hardened-cni-*
-              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_whereabouts-*
-              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_library-*
-      onCreate:
-        before:
-          - description: pull images
-            cmd: |-
-              rm -rf   target
-              mkdir -p target
+      flavor: rpm
+    import:
+      path: install/rpm
 
-              for img in `cat ./files/images-multus.linux-arm64.txt | grep -iv "#" | sort`; do
-                export TAR="$(echo $img | sed -E 's/\//_/g; s/:.+$//g').tar"
-                echo "pulling $img"
-                ./zarf tools registry pull  --platform "linux/arm64" $img ./target/$TAR 2> /dev/null
-              done
+  - name: populate-core-images
+    required: true
+    import:
+      name: images
+      path: images/base
+
+  - name: populate-cni-cilium-images
+    required: false
+    import:
+      name: images
+      path: images/cni-cilium
+
+  - name: populate-cni-multus-images
+    required: false
+    import:
+      name: images
+      path: images/cni-multus

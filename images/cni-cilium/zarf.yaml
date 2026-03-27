@@ -1,0 +1,58 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/zarf-dev/zarf/main/zarf.schema.json
+kind: ZarfPackageConfig
+metadata:
+  name: distro-rke2-images-cni-cilium
+components:
+  - name: images
+    only:
+      cluster:
+        architecture: amd64
+    files:
+      - target: /var/lib/rancher/rke2/images
+        source: target
+    actions:
+      onDeploy:
+        before:
+          - description: remove existing cached cilium images
+            cmd: |-
+              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_mirrored-cilium-*
+              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_hardened-cni-*
+      onCreate:
+        before:
+          - description: pull images
+            cmd: |-
+              rm -rf   target
+              mkdir -p target
+
+              for img in `cat ../../files/images-cilium.linux-amd64.txt | grep -iv "#" | sort`; do
+                export TAR="$(echo $img | sed -E 's/\//_/g; s/:.+$//g').tar"
+                echo "pulling $img"
+                ./zarf tools registry pull  --platform "linux/amd64" $img ./target/$TAR 2> /dev/null
+              done
+  - name: images
+    only:
+      cluster:
+        architecture: arm64
+    files:
+      - target: /var/lib/rancher/rke2/images
+        source: target
+    actions:
+      onDeploy:
+        before:
+          - description: remove existing cached cilium images
+            cmd: |-
+              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_mirrored-cilium-*
+              rm -rf /var/lib/rancher/rke2/images/docker.io_rancher_hardened-cni-*
+      onCreate:
+        before:
+          - description: pull images
+            cmd: |-
+              rm -rf   target
+              mkdir -p target
+
+              for img in `cat ../../files/images-cilium.linux-arm64.txt | grep -iv "#" | sort`; do
+                export TAR="$(echo $img | sed -E 's/\//_/g; s/:.+$//g').tar"
+                echo "pulling $img"
+                ./zarf tools registry pull  --platform "linux/arm64" $img ./target/$TAR 2> /dev/null
+              done

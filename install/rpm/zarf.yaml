@@ -1,0 +1,224 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/zarf-dev/zarf/main/zarf.schema.json
+kind: ZarfPackageConfig
+metadata:
+  name: distro-rke2-rpm
+components:
+  - name: install-engine
+    required: true
+    files:
+      - source: target/rke2-common.rpm
+        target: /var/lib/rancher/rke2/rpm/rke2-common.rpm
+        shasum: "###ZARF_PKG_TMPL_RKE2_RPM_SHA_AMD64###"
+        executable: true
+      - source: target/rke2-selinux.rpm
+        target: /var/lib/rancher/rke2/rpm/rke2-selinux.rpm
+        shasum: "###ZARF_PKG_TMPL_RKE2_SELINUX_RPM_SHA###"
+        executable: true
+    only:
+      cluster:
+        architecture: amd64
+    actions:
+      onCreate:
+        before:
+          - description: pull rke2 rpm
+            cmd: |-
+              rm -rf   target
+              mkdir -p target
+              echo https://rpm.rancher.io/rke2/latest/1.35/centos/9/x86_64/rke2-common-$(echo ###ZARF_PKG_TMPL_RKE2_VERSION### | sed 's#^v##g; s#+#~#g')-0.el9.x86_64.rpm
+              curl -L -o ./target/rke2-common.rpm https://rpm.rancher.io/rke2/latest/1.35/centos/9/x86_64/rke2-common-$(echo ###ZARF_PKG_TMPL_RKE2_VERSION### | sed 's#^v##g; s#+#~#g')-0.el9.x86_64.rpm
+              echo https://github.com/rancher/rke2-selinux/releases/download/v###ZARF_PKG_TMPL_RKE2_SELINUX_RPM_VERSION###.stable.1/rke2-selinux-###ZARF_PKG_TMPL_RKE2_SELINUX_RPM_VERSION###-1.el9.noarch.rpm
+              curl -L -o ./target/rke2-selinux.rpm https://github.com/rancher/rke2-selinux/releases/download/v###ZARF_PKG_TMPL_RKE2_SELINUX_RPM_VERSION###.stable.1/rke2-selinux-###ZARF_PKG_TMPL_RKE2_SELINUX_RPM_VERSION###-1.el9.noarch.rpm
+      onDeploy:
+        defaults:
+          maxRetries: 5
+        before:
+          - cmd: |-
+              if [ "$(uname -m)" != "x86_64" ]; then echo "this package architecture is amd64, but the target system has a different architecture. These architectures must be the same" && exit 1; fi
+            description: Check that the host architecture matches the package architecture
+            maxRetries: 0
+          - cmd: ./zarf internal is-valid-hostname
+            description: Check if the current system has a, RFC1123 compliant hostname
+            maxRetries: 0
+        after:
+          - description: install rke2 rpm
+            cmd: |-
+              dnf install -y /var/lib/rancher/rke2/rpm/rke2-common.rpm /var/lib/rancher/rke2/rpm/rke2-selinux.rpm
+  - name: install-engine
+    required: true
+    files:
+      - source: target/rke2-common.rpm
+        target: /var/lib/rancher/rke2/rpm/rke2-common.rpm
+        shasum: "###ZARF_PKG_TMPL_RKE2_RPM_SHA_ARM64###"
+        executable: true
+      - source: target/rke2-selinux.rpm
+        target: /var/lib/rancher/rke2/rpm/rke2-selinux.rpm
+        shasum: "###ZARF_PKG_TMPL_RKE2_SELINUX_RPM_SHA###"
+        executable: true
+    only:
+      cluster:
+        architecture: arm64
+    actions:
+      onCreate:
+        before:
+          - description: pull rke2 rpm
+            cmd: |-
+              rm -rf   target
+              mkdir -p target
+              echo https://rpm.rancher.io/rke2/latest/1.35/centos/9/aarch64/rke2-common-$(echo ###ZARF_PKG_TMPL_RKE2_VERSION### | sed 's#^v##g; s#+#~#g')-0.el9.aarch64.rpm
+              curl -L -o ./target/rke2-common.rpm https://rpm.rancher.io/rke2/latest/1.35/centos/9/aarch64/rke2-common-$(echo ###ZARF_PKG_TMPL_RKE2_VERSION### | sed 's#^v##g; s#+#~#g')-0.el9.aarch64.rpm
+              echo https://github.com/rancher/rke2-selinux/releases/download/v###ZARF_PKG_TMPL_RKE2_SELINUX_RPM_VERSION###.stable.1/rke2-selinux-###ZARF_PKG_TMPL_RKE2_SELINUX_RPM_VERSION###-1.el9.noarch.rpm
+              curl -L -o ./target/rke2-selinux.rpm https://github.com/rancher/rke2-selinux/releases/download/v###ZARF_PKG_TMPL_RKE2_SELINUX_RPM_VERSION###.stable.1/rke2-selinux-###ZARF_PKG_TMPL_RKE2_SELINUX_RPM_VERSION###-1.el9.noarch.rpm
+      onDeploy:
+        defaults:
+          maxRetries: 5
+        before:
+          - cmd: |-
+              if [ "$(uname -m)" != "aarch64" ] && [ "$(uname -m)" != "arm64" ]; then echo "this package architecture is arm64, but the target system has a different architecture. These architectures must be the same" && exit 1; fi
+            description: Check that the host architecture matches the package architecture
+            maxRetries: 0
+          - cmd: ./zarf internal is-valid-hostname
+            description: Check if the current system has a, RFC1123 compliant hostname
+            maxRetries: 0
+        after:
+          - description: install rke2 rpm
+            cmd: |-
+              dnf install -y /var/lib/rancher/rke2/rpm/rke2-common.rpm /var/lib/rancher/rke2/rpm/rke2-selinux.rpm
+
+  - name: install-server
+    required: true
+    files:
+      - source: target/rke2-server.rpm
+        target: /var/lib/rancher/rke2/rpm/rke2-server.rpm
+        shasum: "###ZARF_PKG_TMPL_RKE2_RPM_SERVER_SHA_AMD64###"
+        executable: true
+    only:
+      cluster:
+        architecture: amd64
+    actions:
+      onCreate:
+        before:
+          - description: pull rke2 rpm
+            cmd: |-
+              rm -rf   target
+              mkdir -p target
+              echo https://rpm.rancher.io/rke2/latest/1.35/centos/9/x86_64/rke2-server-$(echo ###ZARF_PKG_TMPL_RKE2_VERSION### | sed 's#^v##g; s#+#~#g')-0.el9.x86_64.rpm
+              curl -L -o ./target/rke2-server.rpm https://rpm.rancher.io/rke2/latest/1.35/centos/9/x86_64/rke2-server-$(echo ###ZARF_PKG_TMPL_RKE2_VERSION### | sed 's#^v##g; s#+#~#g')-0.el9.x86_64.rpm
+      onDeploy:
+        defaults:
+          maxRetries: 5
+        before:
+          - cmd: |-
+              if [ "$(uname -m)" != "x86_64" ]; then echo "this package architecture is amd64, but the target system has a different architecture. These architectures must be the same" && exit 1; fi
+            description: Check that the host architecture matches the package architecture
+            maxRetries: 0
+          - cmd: ./zarf internal is-valid-hostname
+            description: Check if the current system has a, RFC1123 compliant hostname
+            maxRetries: 0
+        after:
+          - description: install rke2 rpm
+            cmd: |-
+              dnf install -y /var/lib/rancher/rke2/rpm/rke2-server.rpm
+  - name: install-server
+    required: true
+    files:
+      - source: target/rke2-server.rpm
+        target: /var/lib/rancher/rke2/rpm/rke2-server.rpm
+        shasum: "###ZARF_PKG_TMPL_RKE2_RPM_SERVER_SHA_ARM64###"
+        executable: true
+    only:
+      cluster:
+        architecture: arm64
+    actions:
+      onCreate:
+        before:
+          - description: pull rke2 rpm
+            cmd: |-
+              rm -rf   target
+              mkdir -p target
+              echo https://rpm.rancher.io/rke2/latest/1.35/centos/9/aarch64/rke2-server-$(echo ###ZARF_PKG_TMPL_RKE2_VERSION### | sed 's#^v##g; s#+#~#g')-0.el9.aarch64.rpm
+              curl -L -o ./target/rke2-server.rpm https://rpm.rancher.io/rke2/latest/1.35/centos/9/aarch64/rke2-server-$(echo ###ZARF_PKG_TMPL_RKE2_VERSION### | sed 's#^v##g; s#+#~#g')-0.el9.aarch64.rpm
+      onDeploy:
+        defaults:
+          maxRetries: 5
+        before:
+          - cmd: |-
+              if [ "$(uname -m)" != "aarch64" ] && [ "$(uname -m)" != "arm64" ]; then echo "this package architecture is arm64, but the target system has a different architecture. These architectures must be the same" && exit 1; fi
+            description: Check that the host architecture matches the package architecture
+            maxRetries: 0
+          - cmd: ./zarf internal is-valid-hostname
+            description: Check if the current system has a, RFC1123 compliant hostname
+            maxRetries: 0
+        after:
+          - description: install rke2 rpm
+            cmd: |-
+              dnf install -y /var/lib/rancher/rke2/rpm/rke2-server.rpm
+
+  - name: install-agent
+    required: true
+    files:
+      - source: target/rke2-agent.rpm
+        target: /var/lib/rancher/rke2/rpm/rke2-agent.rpm
+        shasum: "###ZARF_PKG_TMPL_RKE2_RPM_AGENT_SHA_AMD64###"
+        executable: true
+    only:
+      cluster:
+        architecture: amd64
+    actions:
+      onCreate:
+        before:
+          - description: pull rke2 rpm
+            cmd: |-
+              rm -rf   target
+              mkdir -p target
+              echo https://rpm.rancher.io/rke2/latest/1.35/centos/9/x86_64/rke2-agent-$(echo ###ZARF_PKG_TMPL_RKE2_VERSION### | sed 's#^v##g; s#+#~#g')-0.el9.x86_64.rpm
+              curl -L -o ./target/rke2-agent.rpm https://rpm.rancher.io/rke2/latest/1.35/centos/9/x86_64/rke2-agent-$(echo ###ZARF_PKG_TMPL_RKE2_VERSION### | sed 's#^v##g; s#+#~#g')-0.el9.x86_64.rpm
+      onDeploy:
+        defaults:
+          maxRetries: 5
+        before:
+          - cmd: |-
+              if [ "$(uname -m)" != "x86_64" ]; then echo "this package architecture is amd64, but the target system has a different architecture. These architectures must be the same" && exit 1; fi
+            description: Check that the host architecture matches the package architecture
+            maxRetries: 0
+          - cmd: ./zarf internal is-valid-hostname
+            description: Check if the current system has a, RFC1123 compliant hostname
+            maxRetries: 0
+        after:
+          - description: install rke2 rpm
+            cmd: |-
+              dnf install -y /var/lib/rancher/rke2/rpm/rke2-agent.rpm
+  - name: install-agent
+    required: true
+    files:
+      - source: target/rke2-agent.rpm
+        target: /var/lib/rancher/rke2/rpm/rke2-agent.rpm
+        shasum: "###ZARF_PKG_TMPL_RKE2_RPM_AGENT_SHA_ARM64###"
+        executable: true
+    only:
+      cluster:
+        architecture: arm64
+    actions:
+      onCreate:
+        before:
+          - description: pull rke2 rpm
+            cmd: |-
+              rm -rf   target
+              mkdir -p target
+              echo https://rpm.rancher.io/rke2/latest/1.35/centos/9/aarch64/rke2-agent-$(echo ###ZARF_PKG_TMPL_RKE2_VERSION### | sed 's#^v##g; s#+#~#g')-0.el9.aarch64.rpm
+              curl -L -o ./target/rke2-agent.rpm https://rpm.rancher.io/rke2/latest/1.35/centos/9/aarch64/rke2-agent-$(echo ###ZARF_PKG_TMPL_RKE2_VERSION### | sed 's#^v##g; s#+#~#g')-0.el9.aarch64.rpm
+      onDeploy:
+        defaults:
+          maxRetries: 5
+        before:
+          - cmd: |-
+              if [ "$(uname -m)" != "aarch64" ] && [ "$(uname -m)" != "arm64" ]; then echo "this package architecture is arm64, but the target system has a different architecture. These architectures must be the same" && exit 1; fi
+            description: Check that the host architecture matches the package architecture
+            maxRetries: 0
+          - cmd: ./zarf internal is-valid-hostname
+            description: Check if the current system has a, RFC1123 compliant hostname
+            maxRetries: 0
+        after:
+          - description: install rke2 rpm
+            cmd: |-
+              dnf install -y /var/lib/rancher/rke2/rpm/rke2-agent.rpm
