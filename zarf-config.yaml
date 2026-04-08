@@ -7,5 +7,5 @@ package:
       version: v0.0.0-rke2r0
       # renovate: datasource=github-tags depName=rancher/rke2 versioning=regex:^v(?<major>1)\.(?<minor>34)\.(?<patch>\d+)\+rke2r(?<build>\d+)$
       rke2_version: v1.34.6+rke2r3
-      rke2_sha_amd64: 616e784e9df74130a9777519bfac5976ffa22901cfb42421ad583e236e765277
-      rke2_sha_arm64: fcd2deb2c60e9b2d9c7db5ed19dfa14c9607565dedb8c812487efab665f39802
+      rke2_sha_amd64: bd6c586be3e54414bdafc87b025c31477562bf0fc8ff2de97131c2ddfb98624a
+      rke2_sha_arm64: 773c482c350d5bb008ddacdebf24912f1cfef45a9bd0fe6e603ced44a8fa4da0
