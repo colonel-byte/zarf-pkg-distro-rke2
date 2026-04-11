@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.35.3](https://github.com/colonel-byte/zarf-pkg-distro-rke2/compare/v1.35.2...v1.35.3) (2026-04-11)
+
+
+### Features
+
+* Update actions/create-github-app-token action to v3.1.1 (main) ([#136](https://github.com/colonel-byte/zarf-pkg-distro-rke2/issues/136)) ([f674e2d](https://github.com/colonel-byte/zarf-pkg-distro-rke2/commit/f674e2d8368e2f3a770aec320341da09bfa4b09e))
+* Update all-actions (main) ([#132](https://github.com/colonel-byte/zarf-pkg-distro-rke2/issues/132)) ([409c743](https://github.com/colonel-byte/zarf-pkg-distro-rke2/commit/409c74381d73b6722d6fc890bd20ed6b9204b8c0))
+* Update chainguard-dev/actions action to v1.6.10 (main) ([#121](https://github.com/colonel-byte/zarf-pkg-distro-rke2/issues/121)) ([9943704](https://github.com/colonel-byte/zarf-pkg-distro-rke2/commit/9943704a51b1c76c5514b325140975e229908bac))
+* Update chainguard-dev/actions action to v1.6.11 (main) ([#123](https://github.com/colonel-byte/zarf-pkg-distro-rke2/issues/123)) ([b2b42e1](https://github.com/colonel-byte/zarf-pkg-distro-rke2/commit/b2b42e1536c8451a1c677bf17dcb1e0bc0e79686))
+* Update dependency rancher/rke2 to v1.35.3+rke2r1 (main) ([#127](https://github.com/colonel-byte/zarf-pkg-distro-rke2/issues/127)) ([004f5e5](https://github.com/colonel-byte/zarf-pkg-distro-rke2/commit/004f5e5c831c15870c27bab144ab6e4fbf0c4dfc))
+* Update dependency rancher/rke2 to v1.35.3+rke2r3 (main) ([#133](https://github.com/colonel-byte/zarf-pkg-distro-rke2/issues/133)) ([7d5d7fc](https://github.com/colonel-byte/zarf-pkg-distro-rke2/commit/7d5d7fc00fc7150914591463d552e66852bb1f31))
+
 ## [1.35.2](https://github.com/colonel-byte/zarf-pkg-distro-rke2/compare/v1.35.1...v1.35.2) (2026-03-18)
 
 
