@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.33.11](https://github.com/colonel-byte/zarf-pkg-distro-rke2/compare/v1.33.10...v1.33.11) (2026-04-24)
+
+
+### Features
+
+* Update dependency rancher/rke2 to v1.33.11+rke2r1 (release/v1.33.x) ([#143](https://github.com/colonel-byte/zarf-pkg-distro-rke2/issues/143)) ([d601fae](https://github.com/colonel-byte/zarf-pkg-distro-rke2/commit/d601fae9ff40e88ec7b9547d34f19518e2e657ce))
+
 ## [1.33.10](https://github.com/colonel-byte/zarf-pkg-distro-rke2/compare/v1.33.9...v1.33.10) (2026-04-11)
 
 
